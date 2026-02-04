@@ -2,19 +2,27 @@
 # Ping sweep the Lab
 
 ping_sweep(){
-	base="onyxnode"
+	local base="onyxnode"
+	local scanned=0
+	local active=0
+	local unresponsive=0
 	spin='|/-\\'
 	for q in {1..200}
 	do
 		host="onyxnode$q"
 		i=$((q % 4))
 		printf "\r%c %d out of 200" "${spin:$i:1}" "$q"
+		scanned=$((scanned+1))
 		if ping -c 1 -W 1 "$host" >> ping.log 2>&1; then
-			echo -e "\r$host true"
+			active=$((active+1))
 		else
-			echo -e "\r$host false"
+			unresponsive=$((unresponsive+1))
 		fi
 	done
+	echo "\nScanned $scanned nodes"
+	echo "Found $active active machines"
+	echo "No response $unresponsive machines"
+	return
 }
 # have a help menu
 help(){
